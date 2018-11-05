@@ -55,6 +55,19 @@ System.out.println(e);
 } 
 for(int i = 0; i<listSite.size(); i++){ 
 System.out.println(listSite.get(i)); 
-} 
+}
+ try{
+            File file = new File("outputsite.db");
+            PrintWriter pw = new PrintWriter(new FileOutputStream(file, true));
+
+            for(int i = 0; i < listSite.size(); i++) {
+                pw.append("\n" + listSite.get(i).getName());
+            }
+
+            pw.close();
+
+        }catch(Exception e){
+
+        }
 } 
 }
