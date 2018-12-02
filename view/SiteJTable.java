@@ -15,30 +15,97 @@ import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import model.Site;
+import model.SiteType;
 public class SiteJTable extends JFrame{
-    private SiteTableModel site;
+    private SiteTableModel sites;
     private JTable table;
     
     public SiteJTable(){
         super("My sites store");
         
-        site = new SiteTableModel();
-        table = new JTable(site);
+        sites = new SiteTableModel();
+        
+        table = new JTable(sites);
         
         final JButton addButton = new JButton("Add site");
         
-        addButton.addActionListener(new ActionListener(){
-            @Override
-            public void actionPerformed(ActionEvent e){
-                String[] s1te = {"", "", "", "", "", ""};
-                //site.addRow(s1te);
-            }
-        });
+
+        addButton.addActionListener(
+                new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                       String[] pet = {"", "", "", "", "", "", ""};
+                    JInternalFrame newFrame = new JInternalFrame("Adding", true, true, true, true);
+                    GridLayout gridLay = new GridLayout(0,2);
+                    gridLay.setHgap(5);
+                    gridLay.setVgap(5);
+                    newFrame.setLayout(gridLay);
+                    newFrame.setVisible(true);
+                    newFrame.pack();
+                    table.add(newFrame);
+                    
+                    newFrame.add(new JLabel(getColumnTitle(0)));
+                    final JTextField address = new JTextField(20);
+                    address.setText("");
+                    newFrame.add(address);
+                    
+                    newFrame.add(new JLabel(getColumnTitle(1)));
+                    final JTextField type = new JTextField(20);
+                    address.setText("");
+                    newFrame.add(type);
+                    
+                    newFrame.add(new JLabel(getColumnTitle(2)));
+                    final JTextField domen = new JTextField(20);
+                    address.setText("");
+                    newFrame.add(domen);
+                    
+                    newFrame.add(new JLabel(getColumnTitle(3)));
+                    final JTextField price = new JTextField(20);
+                    address.setText("");
+                    newFrame.add(price);
+                    
+                    newFrame.add(new JLabel(getColumnTitle(4)));
+                    final JTextField siteAlive = new JTextField(20);
+                    address.setText("");
+                    newFrame.add(siteAlive);
+                    
+                    newFrame.add(new JLabel(getColumnTitle(5)));
+                    final JTextField mainTopic = new JTextField(20);
+                    address.setText("");
+                    newFrame.add(mainTopic);
+                    
+                    JButton save = new JButton("Save");
+                    save.addActionListener(new ActionListener(){
+
+                           @Override
+                           public void actionPerformed(ActionEvent e) {
+                               Site site = new Site();
+                               site.setAddress(address.getText());
+                               SiteType st = new SiteType();
+                               st.setTypeName(type.getText());
+                               site.setSiteType(st);
+                               site.setDomen(domen.getText());
+                               site.setPrice(price.getX());
+                               site.setSiteAlive(siteAlive.getX());
+                               site.addMainTopic(mainTopic.getText());
+                               
+                               sites.addSite(site);
+                               
+                           }
+                        
+                    });
+                    newFrame.add(save);
+                    JButton cancel = new JButton("Cancel");
+                    newFrame.add(cancel);
+                    }
+                }
+        );
         final JButton removeButton = new JButton("Remove selected site");
         removeButton.addActionListener(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent e){
-                //site.removeRow(table.getSelectedRow());
+                sites.removeSite(table.getSelectedRow());
             }
         });
         table.addMouseListener(new MouseAdapter(){
@@ -46,75 +113,64 @@ public class SiteJTable extends JFrame{
                 if(e.getClickCount() == 2){
                     JTable target = (JTable) e.getSource();
                     final int row = target.getSelectedRow();
-                    int column  = target.getSelectedColumn();
-                    
-                    final JInternalFrame editorPopup = new JInternalFrame(
-                    "Edit Record", true, true, true, true);
-                    
+                    int colmun = target.getSelectedColumn();
+                    final JInternalFrame editorPopup = new JInternalFrame("EDITOR", true, true, true, true);
                     GridLayout gridLayout = new GridLayout(0,2);
                     gridLayout.setHgap(5);
                     gridLayout.setVgap(5);
                     editorPopup.setLayout(gridLayout);
+                    
+                    
+                    
                     editorPopup.add(new JLabel(getColumnTitle(0)));
-                    final JTextField address = new JTextField(20);
-                    address.setText(target.getValueAt(row, 0).toString());
-                    editorPopup.add(address);
-
+                    final JTextField addressTf = new JTextField(target.getValueAt(row, 0).toString());
+                    editorPopup.add(addressTf);
+                    
                     editorPopup.add(new JLabel(getColumnTitle(1)));
-                    final JTextField type = new JTextField(20);
-                    type.setText(target.getValueAt(row, 1).toString());
-                    editorPopup.add(type);
-
+                    final JTextField typeTf = new JTextField(target.getValueAt(row, 1).toString());
+                    editorPopup.add(typeTf);
+                    
                     editorPopup.add(new JLabel(getColumnTitle(2)));
-                    final JTextField domen = new JTextField(20);
-                    domen.setText(target.getValueAt(row, 2).toString());
-                    editorPopup.add(domen);
-
+                    final JTextField domenTf = new JTextField(target.getValueAt(row, 2).toString());
+                    editorPopup.add(domenTf);
+                    
                     editorPopup.add(new JLabel(getColumnTitle(3)));
-                    final JTextField price = new JTextField(20);
-                    price.setText(target.getValueAt(row, 3).toString());
-                    editorPopup.add(price);
-
+                    final JTextField priceTf = new JTextField(target.getValueAt(row, 3).toString());
+                    editorPopup.add(priceTf);
+                    
                     editorPopup.add(new JLabel(getColumnTitle(4)));
-                    final JTextField siteAlive = new JTextField(20);
-                    siteAlive.setText(target.getValueAt(row, 4).toString());
-                    editorPopup.add(siteAlive);
-
-                    editorPopup.add(new JLabel(getColumnTitle(6)));
-                    final JTextField mainTopic = new JTextField(20);
-                    mainTopic.setText(target.getValueAt(row, 6).toString());
-                    editorPopup.add(mainTopic);
-
-                    JButton okButton = new JButton("Ok");
-                    okButton.addMouseListener(new MouseAdapter() {
-                        public void mouseClicked(MouseEvent e) {
-
-                            table.getModel().setValueAt(address.getText(), row, 0);
-                            table.getModel().setValueAt(type.getText(), row, 1);
-                            table.getModel().setValueAt(domen.getText(), row, 2);
-                            table.getModel().setValueAt(price.getText(), row, 3);
-                            table.getModel().setValueAt(siteAlive.getText(), row, 4);
-                            table.getModel().setValueAt(mainTopic.getText(), row, 6);
-
-                            JOptionPane.showMessageDialog(((JButton) e
-                                    .getSource()).getParent(), "Record Saved!");
+                    final JTextField siteAliveTf = new JTextField(target.getValueAt(row, 4).toString());
+                    editorPopup.add(siteAliveTf);
                     
+                    editorPopup.add(new JLabel(getColumnTitle(5)));
+                    final JTextField mainTopicTf = new JTextField(target.getValueAt(row, 5).toString());
+                    editorPopup.add(mainTopicTf);
                     
-                }
+                    JButton ok = new JButton("OK");
+                    ok.addMouseListener(new MouseAdapter(){
+                          //getsetValueAt(addressTf.getText(), row, 0);
+                            public void mouseClicked(MouseEvent e){
+                            table.getModel().setValueAt(addressTf.getText(), row, 0);
+                            table.getModel().setValueAt(typeTf.getText(), row, 1);
+                            table.getModel().setValueAt(domenTf.getText(), row, 2);
+                            table.getModel().setValueAt(priceTf.getText(), row, 3);
+                            table.getModel().setValueAt(siteAliveTf.getText(), row, 4);
+                            table.getModel().setValueAt(mainTopicTf.getText(), row, 5);
+                            
+                            JOptionPane.showMessageDialog(((JButton) e.getSource()).getParent(), "Record Saved!");
+                        }
                     });
-            
-                    editorPopup.add(okButton);
-                    JButton cancelButton = new JButton("Cancel");
-                    cancelButton.addMouseListener(new MouseAdapter(){
-                       public void mouseClicked(MouseEvent e){
-                           editorPopup.hide();
-                       } 
+                    editorPopup.add(ok);
+                    JButton c = new JButton("Cancel");
+                    c.addMouseListener(new MouseAdapter(){
+                        public void mouseClicked(MouseEvent e){
+                            editorPopup.hide();
+                        }
                     });
-                    editorPopup.add(cancelButton);
+                    editorPopup.add(c);
                     editorPopup.pack();
                     target.add(editorPopup);
                     editorPopup.setVisible(true);
-                    editorPopup.setClosable(true);
                 }
             }
         });
