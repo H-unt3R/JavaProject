@@ -67,6 +67,29 @@ public class SiteTableModel extends AbstractTableModel{
         data[i][5] = site.get(i).getMainTopic();
     }
     }
+    
+    public void addSite(Site site){
+        Object[][] newData = new Object[data.length+1][columnNames.length];
+        
+        for(int i = 0; i<data.length; i++){
+            newData[i][0] = data[i][0];
+            newData[i][1] = data[i][1];
+            newData[i][2] = data[i][2];
+            newData[i][3] = data[i][3];
+            newData[i][4] = data[i][4];
+            newData[i][5] = data[i][5];
+        }
+        newData[newData.length -1][0] = site.getAddress();
+        newData[newData.length -1][1] = site.getSiteType();
+        newData[newData.length -1][2] = site.getDomen();
+        newData[newData.length -1][3] = site.getPrice();
+        newData[newData.length -1][4] = site.getSiteAlive();
+        newData[newData.length -1][5] = site.getMainTopic();
+        
+        data = newData;
+    }
+    
+    
     @Override
     public int getRowCount(){
         return data.length;
@@ -85,6 +108,11 @@ public class SiteTableModel extends AbstractTableModel{
 
     @Override
     public int getColumnCount() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return columnNames.length;
     }
+
+    public void removeSite(int selectedRow) {
+        
+    }
+
 }
