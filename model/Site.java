@@ -66,4 +66,5 @@ public class Site {
         +"\nprice:" + this.price
         +"\nMain topic:" + sSigns;
     }
+
 }
