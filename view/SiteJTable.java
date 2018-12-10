@@ -15,12 +15,16 @@ import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
 import model.Site;
 import model.SiteType;
 public class SiteJTable extends JFrame{
     private SiteTableModel sites;
     private JTable table;
-    
+    private TableRowSorter<TableModel> rowSorter;
     public SiteJTable(){
         super("My sites store");
         
@@ -28,8 +32,10 @@ public class SiteJTable extends JFrame{
         
         table = new JTable(sites);
         
-        final JButton addButton = new JButton("Add site");
         
+        final JButton addButton = new JButton("Add site");
+        rowSorter = new TableRowSorter<>(table.getModel());
+        table.setRowSorter(rowSorter);
 
         addButton.addActionListener(
                 new ActionListener() {
@@ -97,6 +103,11 @@ public class SiteJTable extends JFrame{
                     });
                     newFrame.add(save);
                     JButton cancel = new JButton("Cancel");
+                    cancel.addMouseListener(new MouseAdapter(){
+                        public void mouseClicked(MouseEvent e){
+                            newFrame.hide();
+                        }
+                    });
                     newFrame.add(cancel);
                     }
                 }
@@ -105,7 +116,10 @@ public class SiteJTable extends JFrame{
         removeButton.addActionListener(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent e){
-                sites.removeSite(table.getSelectedRow());
+                if(table.getSelectedRow()!=-1){
+                    ((SiteTableModel)table.getModel()).removeSite(table.getSelectedRow());
+                    table.updateUI();
+                }
             }
         });
         table.addMouseListener(new MouseAdapter(){
@@ -174,17 +188,76 @@ public class SiteJTable extends JFrame{
                 }
             }
         });
+        JButton saveToDB = new JButton("Save to DB");
+        saveToDB.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e){
+                System.out.print("hello");
+                sites.saveToDB();
+           
+            }
+        });
         table.setPreferredScrollableViewportSize(new Dimension(400, 400));
         table.setFillsViewportHeight(true);
 
         JPanel inputPanel = new JPanel();
         inputPanel.add(addButton);
         inputPanel.add(removeButton);
-
+        inputPanel.add(saveToDB);
+        JTextField tfForSearch = new JTextField();
         Container container = getContentPane();
         container.add(new JScrollPane(table), BorderLayout.CENTER);
         container.add(inputPanel, BorderLayout.NORTH);
-
+        JPanel panel = new JPanel(new BorderLayout());
+        
+        
+        JButton search = new JButton("Click to search");        
+        search.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e){
+                String text = tfForSearch.getText();
+                if(text.trim().length() == 0){
+                    rowSorter.setRowFilter(null);
+                }
+                else{
+                    rowSorter.setRowFilter(RowFilter.regexFilter("(?i)" + tfForSearch.getText()));
+                }
+            }
+        });
+        
+        panel.add(new JLabel("Search:"), BorderLayout.WEST);
+        panel.add(tfForSearch, BorderLayout.CENTER);
+        panel.add(search, BorderLayout.EAST);
+        container.add(panel, BorderLayout.SOUTH);
+        
+//        tfForSearch.getDocument().addDocumentListener(new DocumentListener(){
+//            @Override
+//            public void insertUpdate(DocumentEvent e) {
+//                String text = tfForSearch.getText();
+//                if(text.trim().length() == 0){
+//                    rowSorter.setRowFilter(null);
+//                }
+//                else{
+//                    rowSorter.setRowFilter(RowFilter.regexFilter("(?i)" + text));
+//                }
+//            }
+//
+//            @Override
+//            public void removeUpdate(DocumentEvent e) {
+//                String text = tfForSearch.getText();
+//                if(text.trim().length() == 0){
+//                    rowSorter.setRowFilter(null);
+//                }
+//                else{
+//                    rowSorter.setRowFilter(RowFilter.regexFilter("(?i)" + text));
+//                }
+//            }
+//
+//            @Override
+//            public void changedUpdate(DocumentEvent e) {
+//                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+//            }
+//            
+//        });
+        
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setSize(400, 300);
         setVisible(true);
